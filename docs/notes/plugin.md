@@ -123,6 +123,7 @@ These ran against the real `:parser`, `:export` and `:render`; the controller is
 4. `Dispatchers.EDT` is used for UI hops and `OpenFileDescriptor.navigate`. Whether `Dispatchers.UiWithModelAccess` is the better choice in 262 was not investigated.
 5. Snapshots are collected with the default modality, so the panel does not update while a modal dialog is open.
 6. Choosing an entry in the multi-candidate popup is not tested (an intercepted popup cannot be clicked); only that the popup appears with all candidates and nothing opens beforehand.
+7. Automatic discovery skips directories named `build` (and `out`, `node_modules`, dot-directories). Schemas copied under `build/` are only found through "Choose schema folder…". Room's default location (`app/schemas/…`) is found automatically; verified on a real production path on 2026-11-17 (`SchemaPathMatcher` gives database name and version 20, `group()` the simple-name label).
 
 ## Next steps (in order)
 1. Run `./gradlew runIde` and walk through: first open, empty state and its two links, folder chooser, database switch, auto-reload on file edit, stale banner (text + "Open file" link), search keys (Up/Down/Enter/Esc, `/`), focus mode enablement, legend toggle, reset layout, copy/save Mermaid including the real save dialog and its cancel, go-to-source with a Kotlin `@Entity` and choosing in the multi-candidate chooser, theme switch, 300 ms loading indicator.

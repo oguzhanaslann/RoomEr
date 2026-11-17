@@ -203,7 +203,22 @@ setDiagram ~3 ms. Nodes alone cost 0.5–1.3 ms at these views; the rest of a st
 - `DiagramMetrics.measure(db, collapsed)` uses the default theme's font; a canvas with a custom-font theme needs the 3-arg overload.
 - Arrow-key reachability of every node is tested only for the demo layout, not proven in general.
 
+### Found on a real production schema (2026-11-17)
+A 6-table app database (one hub table with 5 children, composite PKs, a composite FK, a nullable self-reference) rendered
+correctly in light and dark: no overlaps, no edges through tables, no truncated names, correct ends and badges, focus
+dimming correct. Three rough edges, none of them errors:
+- **Legend over content when zoomed in**: the legend is a fixed-size overlay; fit-to-window avoids it, but after zooming
+  in it can cover rows of a table. Default is on. Fix idea: hide or fade it while it intersects a node, or dock it
+  outside the diagram area.
+- **Stacked parent ends**: when several FKs reference the same row (4 children → the hub's PK row), their parent-end
+  symbols draw on top of each other as one `||`, so the edges cannot be counted at that end. Fix idea: fan the anchors
+  out vertically within the row (or across neighbouring rows) as is already done for differing symbol kinds.
+- **Collapse all keeps the expanded layout**: collapsed nodes become thin bars with large gaps. Fix idea: offer
+  re-layout after collapse-all (or re-run layout with the collapsed sizes when no positions were dragged).
+- Composite FKs attach to the first FK column's row only (acceptable, but noted).
+
 ## 8. Next steps (in order)
+0. Fix the legend overlap and the stacked parent ends above (likely on most real schemas).
 1. Launch `./gradlew :render:runDemo` (human; `--args=large` for 100 tables) and check popup menus, tooltips, drag,
    wheel, keyboard with real focus, the focus ring, and how the hairline -> AA switch feels after panning.
 2. Verify inside the IDE with the tool window: UIManager keys in light/dark/high-contrast, runtime theme switch

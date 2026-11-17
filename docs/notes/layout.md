@@ -33,6 +33,8 @@ Cold first call ≈ 220 ms · warm median 8.6 ms · incremental (90 fixed + 10 n
 - Guava is pinned with `strictly("33.8.0-jre")` because ELK asks for the open range `[15.0,)`.
 - Excluded: `emf.ecore.xmi`, `jspecify`, `error_prone_annotations`, `j2objc-annotations`, `listenablefuture`. Confirmed absent from the root plugin's `runtimeClasspath`.
 
+Real production schema (6 tables, 6 FKs, 2026-11-17): ELK cold 152 ms, whole parse + measure + layout ≈245 ms cold, 2.5–4 ms warm; no overlaps.
+
 ## Open
 - Not yet run under a real IDE plugin classloader (only the unit-test JVM). Check on first `runIde`.
 - The plugin ships its own Guava next to the IDE's; untested in an IDE.

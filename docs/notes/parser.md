@@ -61,4 +61,5 @@ only tests, fixtures and this note.
 - Not in the model (reported, not changed): FTS5 `ftsOptions.contentRowId` (the external-content column that maps to the FTS rowid, e.g. `SongFts` → `Song.songId`), index `orders`, other `ftsOptions`, and `FtsInfo`'s KDoc still says "`FTS3` or `FTS4`" although Room 3 writes `FTS5`.
 
 ## Open
+- Real production schema checked on 2026-11-17 (6 tables, composite PKs incl. a 6-column PK, a composite FK, CASCADE actions, a nullable self-reference): parsed correctly, every count and flag matched the raw JSON. Not added as a fixture (private source).
 - Build file: Gson's `error_prone_annotations` is excluded in `parser/build.gradle.kts`; `:parser:test` has passed with it since.

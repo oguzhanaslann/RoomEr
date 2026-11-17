@@ -1,6 +1,6 @@
 # RoomEr – Implementation Status and Handover
 
-Updated: 2026-11-17 · Status: **feature-complete, all automated checks green; not yet run in a live IDE** · Per-module detail: `docs/notes/*.md`
+Updated: 2026-11-17 (real-schema check) · Status: **feature-complete, all automated checks green; not yet run in a live IDE** · Per-module detail: `docs/notes/*.md`
 
 ## 1. Where things stand
 
@@ -19,7 +19,12 @@ Updated: 2026-11-17 · Status: **feature-complete, all automated checks green; n
 - End-to-end load (parse + measure + ELK layout), 100 tables / 1000 columns: 406 ms first run, 17–30 ms warm (budget 2000 ms, AC-21.1).
 - Canvas at that size, software rendering: at most 3.5 ms per frame while panning or zooming; up to about 11 ms for a one-off
   full-quality frame (within the 16.7 ms budget for 60 fps; on-screen fps not measured).
-- **Nothing has been run in a live IDE window.** The project is not a git repository.
+- **Real-world check (2026-11-17):** a production app's schema (6 tables, composite PKs, composite FK, self-reference)
+  went through parse → Mermaid → layout → render → discovery path matching with no errors (≈245 ms cold). Three UX rough
+  edges found, listed in §4 item 2.
+- **Nothing has been run in a live IDE window.**
+- Git: repository initialised on `main`; first commit `16eb172`. No remote yet.
+- Lessons learned while building this: `docs/06-learnings.md`.
 
 ## 2. Toolchain (this machine)
 
@@ -60,11 +65,13 @@ Updated: 2026-11-17 · Status: **feature-complete, all automated checks green; n
    collapse, drag + restart (positions restored), reset layout, copy/save Mermaid (incl. cancel), go to source on a **Kotlin**
    `@Entity` and the multi-candidate chooser, theme switch (light/dark/high contrast), 300 ms loading indicator, tool window icon
    in the New UI, narrow tool-window widths. Also confirm ELK runs under the plugin classloader and the bundled Guava causes no conflict.
-2. Manual rendering checklist and on-screen 60 fps measurement at 100 tables (AC-13.1, AC-21.2). Record results in the release checklist.
-3. Optional canvas improvements (see `notes/render.md`): cache the edge layer as an image (full-quality frames ~11 ms → lower),
+2. Canvas fixes found on the real schema (`notes/render.md` §7): move/hide the legend when it covers a table after
+   zooming in; fan out parent-end symbols when several FKs end on the same row; optionally re-layout after collapse-all.
+3. Manual rendering checklist and on-screen 60 fps measurement at 100 tables (AC-13.1, AC-21.2). Record results in the release checklist.
+4. Optional canvas improvements (see `notes/render.md`): cache the edge layer as an image (full-quality frames ~11 ms → lower),
    obstacle-avoiding edge routing, draw FTS5 `contentRowId` links (not in the model yet).
-4. Release items: Marketplace name availability (R4), licence headers in source files, sign-off of the EPL/Apache bundling check
-   (R2, `NOTICE` lists everything bundled), `git init` and first commit, Marketplace description/screenshots.
+5. Release items: Marketplace name availability (R4), licence headers in source files, sign-off of the EPL/Apache bundling check
+   (R2, `NOTICE` lists everything bundled), git remote + CI run, Marketplace description/screenshots.
 
 ## 5. How to resume with agents
 

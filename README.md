@@ -110,6 +110,17 @@ platformLocalPath=/Applications/Android Studio.app
 Only the root project depends on the IntelliJ Platform. The logic modules are plain Kotlin/JVM modules, so
 they cannot reference Swing-in-IDE or platform UI classes.
 
+## Project documentation
+
+| File | Contents |
+|---|---|
+| `docs/01-discovery-notes.md` | Decisions and their rationale, non-goals, risks |
+| `docs/02-spec.md` | Functional and non-functional requirements |
+| `docs/03-user-stories.md`, `docs/04-acceptance-criteria.md` | User stories and acceptance criteria |
+| `docs/05-implementation-status.md` | Current status, toolchain, remaining work |
+| `docs/06-learnings.md` | Lessons learned that are not obvious from the code |
+| `docs/notes/*.md` | Per-module handover notes |
+
 ## Licence
 
 Apache-2.0, see [LICENSE](LICENSE). Third-party components are listed in [NOTICE](NOTICE).
