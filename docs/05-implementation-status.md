@@ -13,7 +13,7 @@ Updated: 2026-11-17 (real-schema check) · Status: **feature-complete, all autom
 | `:render` (Swing canvas) | finished; demo images inspected in light, dark and high-contrast | 60 pass | `notes/render.md` |
 | root plugin (discovery, state, tool window, navigation) | finished; panel exercised in platform tests | 71 pass | `notes/plugin.md` |
 
-- `./gradlew check buildPlugin` passes from scratch (`--rerun-tasks`). Plugin zip: `build/distributions/RoomEr-0.1.0.zip`, 8.6 MB.
+- `./gradlew check buildPlugin` passes from scratch (`--rerun-tasks`). Plugin zip: `build/distributions/RoomEr-0.0.1.zip`, 8.6 MB.
 - `./gradlew verifyPlugin`: **Compatible** with Android Studio 2026.1.4 (Quail, AI-261.26222.65) and 2026.2.2 (Rabbit, AI-262.10968.63),
   with no deprecated, experimental or internal API usages.
 - End-to-end load (parse + measure + ELK layout), 100 tables / 1000 columns: 406 ms first run, 17–30 ms warm (budget 2000 ms, AC-21.1).
@@ -23,7 +23,7 @@ Updated: 2026-11-17 (real-schema check) · Status: **feature-complete, all autom
   went through parse → Mermaid → layout → render → discovery path matching with no errors (≈245 ms cold). Three UX rough
   edges found, listed in §4 item 2.
 - **Nothing has been run in a live IDE window.**
-- Git: repository initialised on `main`; first commit `16eb172`. No remote yet.
+- Git: `main` on GitHub (private): https://github.com/oguzhanaslann/RoomEr. First release: `v0.0.1` (pre-release, plugin zip attached).
 - Lessons learned while building this: `docs/06-learnings.md`.
 
 ## 2. Toolchain (this machine)
