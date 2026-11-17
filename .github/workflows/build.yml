@@ -1,0 +1,35 @@
+name: Build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      # Without local.properties the build downloads the Android Studio release named in gradle.properties.
+      # `check` runs every module's tests plus the AC-23.2 (no network/telemetry) and AC-24.1 (UI-free modules) rules.
+      - name: Test and check
+        run: ./gradlew check buildPlugin
+
+      - name: Plugin verifier (AC-22.1)
+        run: ./gradlew verifyPlugin
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: reports
+          path: |
+            **/build/reports/
+            build/distributions/

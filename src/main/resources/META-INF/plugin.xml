@@ -1,0 +1,60 @@
+<idea-plugin>
+    <id>com.oguzhanaslann.roomer</id>
+    <name>RoomEr - Room ER Diagrams</name>
+    <vendor>Oguzhan Aslan</vendor>
+    <description><![CDATA[
+        Shows the schema files exported by Room (<code>exportSchema = true</code>) as an interactive
+        entity-relationship diagram in the <b>Room ER</b> tool window: tables, columns, keys, indices,
+        views and FTS tables with crow's-foot relationships, search, focus mode, go-to-source and
+        Mermaid export. Read-only and offline.
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
+
+    <resource-bundle>messages.RoomErBundle</resource-bundle>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <toolWindow id="Room ER"
+                    anchor="right"
+                    icon="com.oguzhanaslann.roomer.RoomErIcons.ToolWindow"
+                    factoryClass="com.oguzhanaslann.roomer.toolwindow.RoomErToolWindowFactory"/>
+        <notificationGroup id="RoomEr"
+                           displayType="BALLOON"
+                           bundle="messages.RoomErBundle"
+                           key="notification.group.roomer"/>
+    </extensions>
+
+    <actions resource-bundle="messages.RoomErBundle">
+        <group id="RoomEr.Toolbar">
+            <action id="RoomEr.Refresh" class="com.oguzhanaslann.roomer.toolwindow.RefreshAction"
+                    icon="AllIcons.Actions.Refresh"/>
+            <separator/>
+            <action id="RoomEr.FitToWindow" class="com.oguzhanaslann.roomer.toolwindow.FitToWindowAction"
+                    icon="AllIcons.General.FitContent"/>
+            <action id="RoomEr.ZoomIn" class="com.oguzhanaslann.roomer.toolwindow.ZoomInAction"
+                    icon="AllIcons.General.ZoomIn"/>
+            <action id="RoomEr.ZoomOut" class="com.oguzhanaslann.roomer.toolwindow.ZoomOutAction"
+                    icon="AllIcons.General.ZoomOut"/>
+            <separator/>
+            <action id="RoomEr.CollapseAll" class="com.oguzhanaslann.roomer.toolwindow.CollapseAllAction"
+                    icon="AllIcons.Actions.Collapseall"/>
+            <action id="RoomEr.ExpandAll" class="com.oguzhanaslann.roomer.toolwindow.ExpandAllAction"
+                    icon="AllIcons.Actions.Expandall"/>
+            <action id="RoomEr.FocusMode" class="com.oguzhanaslann.roomer.toolwindow.FocusModeAction"
+                    icon="AllIcons.General.Locate"/>
+            <action id="RoomEr.ResetLayout" class="com.oguzhanaslann.roomer.toolwindow.ResetLayoutAction"
+                    icon="AllIcons.Graph.Layout"/>
+            <action id="RoomEr.ToggleLegend" class="com.oguzhanaslann.roomer.toolwindow.ToggleLegendAction"
+                    icon="AllIcons.Actions.ToggleVisibility"/>
+            <separator/>
+            <action id="RoomEr.CopyAsMermaid" class="com.oguzhanaslann.roomer.toolwindow.CopyAsMermaidAction"
+                    icon="AllIcons.Actions.Copy"/>
+            <action id="RoomEr.SaveAsMermaid" class="com.oguzhanaslann.roomer.toolwindow.SaveAsMermaidAction"
+                    icon="AllIcons.Actions.MenuSaveall"/>
+            <separator/>
+            <action id="RoomEr.ChooseSchemaFolder" class="com.oguzhanaslann.roomer.toolwindow.ChooseSchemaFolderAction"
+                    icon="AllIcons.Actions.MenuOpen"/>
+        </group>
+    </actions>
+</idea-plugin>

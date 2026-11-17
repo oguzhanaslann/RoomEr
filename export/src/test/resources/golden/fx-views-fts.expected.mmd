@@ -1,0 +1,28 @@
+erDiagram
+    %% view
+    article_summaries
+    articles {
+        INTEGER id PK
+        INTEGER author_id FK
+        TEXT title
+        TEXT body
+        INTEGER word_count
+    }
+    %% FTS4 virtual table (content table: articles)
+    articles_fts {
+        TEXT title
+        TEXT body
+    }
+    %% view
+    author_stats
+    authors {
+        INTEGER id PK
+        TEXT name
+    }
+    %% FTS3 virtual table
+    notes_fts {
+        TEXT note
+        TEXT tag
+    }
+
+    authors ||--o{ articles : "author_id"

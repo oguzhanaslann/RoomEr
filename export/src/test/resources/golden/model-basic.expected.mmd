@@ -1,0 +1,45 @@
+erDiagram
+    %% view
+    active_users
+    categories {
+        INTEGER id PK
+        INTEGER parent_id FK
+        TEXT name
+        TEXT slug
+    }
+    "order-items" {
+        INTEGER id PK
+        INTEGER post_id FK, UK
+        REAL unit_price "unit price"
+    }
+    post_categories {
+        INTEGER post_id PK, FK
+        INTEGER category_id PK, FK
+    }
+    posts {
+        INTEGER id PK
+        INTEGER author_id FK
+        TEXT title
+        TEXT body
+    }
+    %% FTS4 virtual table (content table: posts)
+    posts_fts {
+        TEXT title
+        TEXT body
+    }
+    profiles {
+        INTEGER user_id PK, FK
+        TEXT bio
+    }
+    users {
+        INTEGER id PK
+        TEXT email UK
+        TEXT display_name
+    }
+
+    categories |o--o{ categories : "parent_id"
+    categories ||--o{ post_categories : "category_id"
+    posts |o--o| "order-items" : "post_id"
+    posts ||--o{ post_categories : "post_id"
+    users ||--o{ posts : "author_id"
+    users ||--o| profiles : "user_id"

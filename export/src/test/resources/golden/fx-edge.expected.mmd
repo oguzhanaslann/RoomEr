@@ -1,0 +1,28 @@
+erDiagram
+    "2024 archive" {
+        INTEGER tenant_id PK, FK "tenant id"
+        INTEGER order_ PK, FK "order#"
+        VARCHAR_20_ note
+        TEXT _1st UK "1st"
+    }
+    Zeta {
+        INTEGER id PK
+    }
+    alpha {
+        INTEGER tenant_id PK
+        INTEGER order_no PK
+        INTEGER updated_by FK
+        INTEGER created_by FK
+        INTEGER ghost_id FK
+    }
+    %% FTS3 virtual table
+    docs_fts {
+        TEXT content
+    }
+    "say 'hi'"
+    %% view
+    "v weird"
+
+    Zeta ||--o{ alpha : "created_by"
+    Zeta |o--o{ alpha : "updated_by"
+    alpha ||--o| "2024 archive" : "tenant id, order#"

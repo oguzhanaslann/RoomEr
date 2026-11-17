@@ -1,0 +1,40 @@
+erDiagram
+    categories {
+        INTEGER id PK
+        TEXT name
+        INTEGER parent_id FK
+    }
+    post_categories {
+        INTEGER post_id PK, FK
+        INTEGER category_id PK, FK
+        INTEGER sort_order
+    }
+    posts {
+        INTEGER id PK
+        INTEGER author_id FK
+        TEXT title
+        TEXT body
+        INTEGER published_at
+    }
+    profiles {
+        INTEGER user_id PK, FK
+        TEXT bio
+        TEXT website
+        TEXT address_city
+        TEXT address_zip
+    }
+    users {
+        INTEGER id PK
+        TEXT email UK
+        TEXT display_name
+        INTEGER is_active
+        INTEGER created_at
+        REAL rating
+        BLOB avatar
+    }
+
+    categories |o--o{ categories : "parent_id"
+    categories ||--o{ post_categories : "category_id"
+    posts ||--o{ post_categories : "post_id"
+    users ||--o{ posts : "author_id"
+    users ||--o| profiles : "user_id"
