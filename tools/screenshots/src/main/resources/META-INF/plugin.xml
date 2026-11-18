@@ -1,0 +1,13 @@
+<idea-plugin>
+    <id>com.oguzhanaslann.roomer.screenshots</id>
+    <name>RoomEr Screenshot Driver</name>
+    <vendor>Oguzhan Aslan</vendor>
+    <description>Development tool: captures RoomEr's Marketplace screenshots in a sandbox IDE. Not for release.</description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.oguzhanaslann.roomer</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <postStartupActivity implementation="com.oguzhanaslann.roomer.screenshots.ScreenshotDriver"/>
+    </extensions>
+</idea-plugin>

@@ -3,15 +3,58 @@
 An Android Studio plugin that reads the schema files exported by [Room](https://developer.android.com/training/data-storage/room)
 and shows them as an interactive entity-relationship diagram in the **Room ER** tool window.
 
-- Tables, columns and types with PK / FK / unique / index / not-null markers
-- Foreign keys in crow's-foot notation, with inferred cardinality
-- Views and FTS tables in their own styles, with a legend
-- Automatic layered layout (ELK); drag tables, positions are remembered per database
-- Search, focus mode (a table and its FK neighbours), collapsible column lists
-- Go to source: jump from a table to its `@Entity` class
-- Export as Mermaid `erDiagram` (copy or save `.mmd`)
-- Reloads automatically when the schema files change
+![RoomEr showing a Room database as an ER diagram next to its entity classes](docs/screenshots/01-overview-light.png)
+
+## Features
+
+### The whole database at a glance
+
+Every table, view and FTS table with its columns and types, laid out automatically. Foreign keys are drawn in
+crow's-foot notation with their cardinality worked out from the schema: one-to-one, one-to-many and the junction
+tables of many-to-many relationships. Drag tables where you want them; RoomEr remembers the positions per database
+and reloads the diagram by itself after every build.
+
+### Focus on one table
+
+Select a table and turn on **Focus mode** to see only it and the tables it is linked to by foreign keys; everything
+else fades into the background. RoomEr follows the IDE theme: light, dark and high contrast.
+
+![Focus mode on the tracks table, dark theme](docs/screenshots/02-focus-mode-dark.png)
+
+### Find any table or column
+
+Type in the search box (or press `/`) to find tables and columns by name. Pick a result to jump to it on the
+diagram; `Enter` on a selected table opens its `@Entity` class in the editor (Kotlin or Java).
+
+![Searching for "play" lists matching tables and columns](docs/screenshots/03-search-light.png)
+
+### Every key and index in view
+
+Badges mark primary keys (`PK`), foreign keys (`FK`), unique columns (`UQ`) and indexed columns (`IDX`). Nullable
+types end in `?`. The relationship ends show exactly one, zero or one, or many.
+
+![Column badges and crow's-foot relationship ends up close](docs/screenshots/04-close-up-dark.png)
+
+### Export to Mermaid
+
+**Copy as Mermaid** or **Save as .mmd** turns the schema into a Mermaid `erDiagram` for READMEs, wikis and
+pull requests: GitHub, GitLab and Notion render it directly.
+
+![The Mermaid export open next to the diagram](docs/screenshots/05-mermaid-export-light.png)
+
+### Also
+
+- Several databases per project, with a switcher in the tool window
+- Collapse tables to their names, reset the layout, show or hide the legend
 - Read-only and offline: no network access, no telemetry
+
+## Installation
+
+- **JetBrains Marketplace** (coming soon): **Settings | Plugins | Marketplace**, search for "RoomEr", install.
+- **From disk:** download `RoomEr-<version>.zip` from [Releases](https://github.com/oguzhanaslann/RoomEr/releases),
+  then **Settings | Plugins | ⚙ | Install Plugin from Disk…** and pick the zip without unzipping it.
+
+Requires Android Studio 2026.1 (Quail) or newer.
 
 ## Setup: export your Room schema
 
@@ -109,6 +152,12 @@ platformLocalPath=/Applications/Android Studio.app
 
 Only the root project depends on the IntelliJ Platform. The logic modules are plain Kotlin/JVM modules, so
 they cannot reference Swing-in-IDE or platform UI classes.
+
+## Screenshots
+
+`./gradlew runIdeScreenshots` opens the demo project in `samples/demo-music` in a sandbox Android Studio, captures the
+Marketplace screenshots (2880×1800) into `build/screenshots/` and closes the IDE. The driver is a dev-only plugin in
+`tools/screenshots` that never ships with RoomEr. Copy the results to `docs/screenshots/` when they change.
 
 ## Releasing
 

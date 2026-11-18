@@ -9,3 +9,7 @@ local.properties
 .DS_Store
 .claude/settings.local.json
 .samples/
+
+# The demo project ships its minimal IntelliJ project files.
+!samples/demo-music/.idea/
+!samples/demo-music/demo-music.iml

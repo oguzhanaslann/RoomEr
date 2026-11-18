@@ -158,6 +158,40 @@ intellijPlatform {
 }
 
 // ---------------------------------------------------------------------------------------------------------------
+// Marketplace screenshots: `./gradlew runIdeScreenshots` opens a copy of samples/demo-music in a sandbox IDE with
+// the dev-only :screenshots driver plugin, which saves PNGs to build/screenshots and closes the IDE.
+// ---------------------------------------------------------------------------------------------------------------
+
+val prepareDemoProject = tasks.register<Sync>("prepareDemoProject") {
+    from("samples/demo-music") { exclude("generate_schema.py") }
+    into(layout.buildDirectory.dir("demo-music"))
+}
+
+intellijPlatformTesting.runIde.register("runIdeScreenshots") {
+    plugins {
+        localPlugin(dependencies.project(":screenshots"))
+    }
+    task {
+        dependsOn(prepareDemoProject)
+        val demo = layout.buildDirectory.dir("demo-music")
+        val out = layout.buildDirectory.dir("screenshots")
+        doFirst { out.get().asFile.deleteRecursively() }
+        argumentProviders.add(CommandLineArgumentProvider { listOf(demo.get().asFile.absolutePath) })
+        jvmArgumentProviders.add(CommandLineArgumentProvider {
+            listOf(
+                "-Droomer.screenshots.out=${out.get().asFile.absolutePath}",
+                "-Didea.trust.all.projects=true",
+                "-Ddisable.android.first.run=true",
+                "-Djb.consents.confirmation.enabled=false",
+                "-Djb.privacy.policy.text=<!--999.999-->",
+                "-Dide.show.tips.on.startup.default.value=false",
+                "-Didea.initially.ask.config=never",
+            )
+        })
+    }
+}
+
+// ---------------------------------------------------------------------------------------------------------------
 // Rules from the acceptance criteria, enforced by the build. Both run as part of `./gradlew check`.
 // ---------------------------------------------------------------------------------------------------------------
 

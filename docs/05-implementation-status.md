@@ -71,7 +71,7 @@ Updated: 2026-11-17 (real-schema check) · Status: **feature-complete, all autom
 4. Optional canvas improvements (see `notes/render.md`): cache the edge layer as an image (full-quality frames ~11 ms → lower),
    obstacle-avoiding edge routing, draw FTS5 `contentRowId` links (not in the model yet).
 5. Release items (icon, listing text, change notes from `CHANGELOG.md` and the tag-triggered `Release` workflow are done; first Marketplace upload is manual): Marketplace name availability (R4), licence headers in source files, sign-off of the EPL/Apache bundling check
-   (R2, `NOTICE` lists everything bundled), git remote + CI run, Marketplace description/screenshots.
+   (R2, `NOTICE` lists everything bundled), git remote + CI run, Marketplace description. Screenshots: done (`docs/screenshots/`, regenerate with `./gradlew runIdeScreenshots`).
 
 ## 5. How to resume with agents
 
