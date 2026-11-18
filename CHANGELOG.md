@@ -8,6 +8,15 @@ Format: one `## [version] - date` heading per release, `### Added` / `### Change
 
 ## [Unreleased]
 
+## [0.0.3] - 2026-11-18
+
+### Added
+
+- Room 3 support: go to source finds classes annotated with `androidx.room3.Entity` and `androidx.room3.DatabaseView`,
+  next to Room 2's `androidx.room` ones.
+- Per-variant schema folders (`schemas/<variant>/<DatabaseClass>/<n>.json`, from `schemaDirectory("<variant>", …)`)
+  are found automatically; the database switcher names the variant.
+
 ## [0.0.2] - 2026-11-18
 
 ### Added

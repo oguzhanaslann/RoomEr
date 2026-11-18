@@ -79,6 +79,31 @@ class SchemaPathMatcherTest {
     }
 
     @Test
+    fun `per-variant schema folders are found and labelled with the variant`() {
+        val match = SchemaPathMatcher.match("/p/app/schemas/demoDebug/com.acme.AppDb/2.json")
+        assertEquals(
+            SchemaFileMatch("/p/app/schemas/demoDebug/com.acme.AppDb", "com.acme.AppDb", 2, "/p/app/schemas/demoDebug/com.acme.AppDb/2.json", "demoDebug"),
+            match,
+        )
+        // Not a variant layout: the "database" folder is no qualified class name, or the "variant" has a dot.
+        assertNull(SchemaPathMatcher.match("/p/app/schemas/x/nested/1.json"))
+        assertNull(SchemaPathMatcher.match("/p/app/schemas/com.acme.AppDb/old/1.json"))
+
+        val files = listOf(
+            "/p/app/schemas/demoDebug/com.acme.AppDb/1.json",
+            "/p/app/schemas/demoDebug/com.acme.AppDb/2.json",
+            "/p/app/schemas/fullRelease/com.acme.AppDb/1.json",
+        )
+        val databases = SchemaPathMatcher.group(files.mapNotNull(SchemaPathMatcher::match), "/p")
+        assertEquals(listOf("AppDb (app, demoDebug)", "AppDb (app, fullRelease)"), databases.map { it.label })
+        assertEquals(listOf(2, 1), databases.map { it.latestVersion })
+        assertEquals(2, databases.map { it.stateKey }.toSet().size)
+
+        val single = SchemaPathMatcher.group(listOfNotNull(SchemaPathMatcher.match("/p/schemas/demoDebug/com.acme.AppDb/1.json")), "/p")
+        assertEquals("AppDb", single.single().label)
+    }
+
+    @Test
     fun `manual folder may be the schemas dir, a database dir or an ancestor`() {
         // database dir, whatever its parent is called
         assertEquals("com.acme.AppDb", SchemaPathMatcher.matchInFolder("/x/exported/com.acme.AppDb", "/x/exported/com.acme.AppDb/3.json")?.databaseName)

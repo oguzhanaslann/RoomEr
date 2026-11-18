@@ -44,6 +44,20 @@ class SchemaDiscoveryTest : RoomErPlatformTestCase() {
         assertEquals(setOf("AppDb (app)", "AppDb (lib)"), databases.map { it.label }.toSet())
     }
 
+    fun testPerVariantSchemaFoldersAreFound() {
+        addFile("app/schemas/demoDebug/com.acme.AppDb/1.json", TestSchemas.schema(1, "users"))
+        val debugLatest = addFile("app/schemas/demoDebug/com.acme.AppDb/2.json", TestSchemas.schema(2, "users"))
+        addFile("app/schemas/fullRelease/com.acme.AppDb/1.json", TestSchemas.schema(1, "users"))
+        addFile("app/schemas/notes/misc/1.json", "{}") // not a variant layout: "misc" is no qualified class name
+
+        val result = discover()
+        assertEquals(
+            listOf("AppDb (app, demoDebug)" to 2, "AppDb (app, fullRelease)" to 1),
+            result.databases.map { it.label to it.latestVersion },
+        )
+        assertEquals(debugLatest, result.files[result.databases.first().latestFilePath])
+    }
+
     fun testBuildOutputIsSkipped() {
         addFile("app/build/intermediates/schemas/com.acme.AppDb/9.json", TestSchemas.schema(9, "users"))
         addFile("app/.hidden/schemas/com.acme.AppDb/8.json", TestSchemas.schema(8, "users"))

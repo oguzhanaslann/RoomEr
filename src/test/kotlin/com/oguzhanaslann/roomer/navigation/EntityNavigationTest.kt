@@ -110,6 +110,30 @@ class EntityNavigationTest : RoomErPlatformTestCase() {
         assertTrue("an entity is not a view", resolve("notes_fts", EntityKind.VIEW) is NavigationTarget.Nothing)
     }
 
+    fun testResolvesRoom3Annotations() {
+        addFile("androidx/room3/Entity.java", "package androidx.room3;\npublic @interface Entity { String tableName() default \"\"; }")
+        addFile(
+            "androidx/room3/DatabaseView.java",
+            "package androidx.room3;\npublic @interface DatabaseView { String value() default \"\"; String viewName() default \"\"; }",
+        )
+        addFile("com/acme/Song.java", "package com.acme;\nimport androidx.room3.Entity;\n@Entity(tableName = \"songs\")\npublic class Song { }")
+        addFile("com/acme/Album.java", "package com.acme;\n@androidx.room3.Entity\npublic class Album { }")
+        addFile("com/acme/Top.java", "package com.acme;\n@androidx.room3.DatabaseView(value = \"SELECT 1\", viewName = \"top_songs\")\npublic class Top { }")
+
+        assertEquals(listOf("com.acme.Song"), resolve("songs").classNames())
+        assertEquals(listOf("com.acme.Album"), resolve("Album").classNames())
+        assertEquals(listOf("com.acme.Top"), resolve("top_songs", EntityKind.VIEW).classNames())
+    }
+
+    fun testRoom2AndRoom3EntitiesResolveSideBySide() {
+        addRoomAnnotations()
+        addFile("androidx/room3/Entity.java", "package androidx.room3;\npublic @interface Entity { String tableName() default \"\"; }")
+        addFile("com/acme/legacy/User.java", "package com.acme.legacy;\n@androidx.room.Entity(tableName = \"users\")\npublic class User { }")
+        addFile("com/acme/next/User.java", "package com.acme.next;\n@androidx.room3.Entity(tableName = \"users\")\npublic class User { }")
+
+        assertEquals(listOf("com.acme.legacy.User", "com.acme.next.User"), resolve("users").classNames())
+    }
+
     fun testMultipleCandidatesAreAllOffered() {
         addRoomAnnotations()
         addFile("com/acme/a/UserEntity.java", "package com.acme.a;\n@androidx.room.Entity(tableName = \"users\")\npublic class UserEntity { }")

@@ -23,7 +23,7 @@ sealed interface EntityResolution {
     /** One or more classes matched; more than one means the user has to choose (AC-17.4). */
     data class Found(val candidates: List<EntityCandidate>) : EntityResolution
 
-    /** `androidx.room.Entity` / `DatabaseView` cannot be resolved: Room is not on the project classpath. */
+    /** Neither Room 2 (`androidx.room`) nor Room 3 (`androidx.room3`) annotations resolve: Room is not on the classpath. */
     data object RoomNotAvailable : EntityResolution
 
     /** Room is available but no annotated class in the project matches the name. */
@@ -35,8 +35,10 @@ sealed interface EntityResolution {
  * seen through their light classes when the Kotlin plugin is installed, so no Kotlin dependency is needed.
  */
 object EntityResolver {
-    const val ENTITY_ANNOTATION: String = "androidx.room.Entity"
-    const val VIEW_ANNOTATION: String = "androidx.room.DatabaseView"
+    /** Room 2.x and Room 3.x packages; a project may use either, or both in different modules. */
+    val ROOM_PACKAGES: List<String> = listOf("androidx.room", "androidx.room3")
+    const val ENTITY_ANNOTATION: String = "Entity"
+    const val VIEW_ANNOTATION: String = "DatabaseView"
 
     /**
      * Must be called in a read action in smart mode, off the EDT.
@@ -45,18 +47,21 @@ object EntityResolver {
      * explicit name whose simple name equals [entityName] — Room's default — exactly, then ignoring case.
      */
     fun resolve(project: Project, entityName: String, kind: EntityKind): EntityResolution {
-        val annotationName = if (kind == EntityKind.VIEW) VIEW_ANNOTATION else ENTITY_ANNOTATION
+        val simpleAnnotation = if (kind == EntityKind.VIEW) VIEW_ANNOTATION else ENTITY_ANNOTATION
         val nameAttribute = if (kind == EntityKind.VIEW) "viewName" else "tableName"
-        val annotationClass = JavaPsiFacade.getInstance(project)
-            .findClass(annotationName, GlobalSearchScope.allScope(project))
-            ?: return EntityResolution.RoomNotAvailable
+        val facade = JavaPsiFacade.getInstance(project)
+        val annotationClasses = ROOM_PACKAGES.mapNotNull { pkg ->
+            facade.findClass("$pkg.$simpleAnnotation", GlobalSearchScope.allScope(project))
+        }
+        if (annotationClasses.isEmpty()) return EntityResolution.RoomNotAvailable
 
-        val evaluator = JavaPsiFacade.getInstance(project).constantEvaluationHelper
+        val evaluator = facade.constantEvaluationHelper
         val byDeclaredName = ArrayList<PsiClass>()
         val bySimpleName = ArrayList<PsiClass>()
         val bySimpleNameIgnoringCase = ArrayList<PsiClass>()
-        AnnotatedElementsSearch.searchPsiClasses(annotationClass, GlobalSearchScope.projectScope(project))
-            .forEach { psiClass ->
+        for (annotationClass in annotationClasses) {
+            val annotationName = annotationClass.qualifiedName ?: continue
+            AnnotatedElementsSearch.searchPsiClasses(annotationClass, GlobalSearchScope.projectScope(project)).forEach { psiClass ->
                 ProgressManager.checkCanceled()
                 val annotation = psiClass.getAnnotation(annotationName)
                 val declaredName = annotation?.let {
@@ -71,6 +76,7 @@ object EntityResolver {
                     simpleName.equals(entityName, ignoreCase = true) -> bySimpleNameIgnoringCase += psiClass
                 }
             }
+        }
 
         val matches = listOf(byDeclaredName, bySimpleName, bySimpleNameIgnoringCase).firstOrNull { it.isNotEmpty() }
             ?: return EntityResolution.NoMatch

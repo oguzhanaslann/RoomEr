@@ -67,19 +67,25 @@ RoomEr reads the JSON that Room writes at build time, so schema export must be o
    abstract class AppDatabase : RoomDatabase()
    ```
 
-2. Tell Room where to write the files, in the module's `build.gradle.kts`:
+2. Tell Room where to write the files, in the module's `build.gradle.kts`. RoomEr works with Room 2.x and
+   Room 3.x; the Gradle plugin and its block are named differently:
+
+   | Room | Plugin ID | Block |
+   |---|---|---|
+   | 2.x | `androidx.room` | `room { }` |
+   | 3.x | `androidx.room3` | `room3 { }` |
 
    ```kotlin
    plugins {
-       id("androidx.room")
+       id("androidx.room")        // Room 3.x: id("androidx.room3")
    }
 
-   room {
+   room {                         // Room 3.x: room3 {
        schemaDirectory("$projectDir/schemas")
    }
    ```
 
-   or, without the Room Gradle plugin:
+   or, Room 2.x without the Room Gradle plugin:
 
    ```kotlin
    ksp {
@@ -87,11 +93,13 @@ RoomEr reads the JSON that Room writes at build time, so schema export must be o
    }
    ```
 
-3. Build the project. Room writes `schemas/<fully.qualified.DatabaseClass>/<version>.json`.
+3. Build the project. Room writes `schemas/<fully.qualified.DatabaseClass>/<version>.json`. Per-variant folders,
+   such as `schemaDirectory("demoDebug", "$projectDir/schemas/demoDebug")`, are found too; the database switcher
+   then shows the variant next to the database name.
 
 4. Open **View | Tool Windows | Room ER**.
 
-RoomEr scans the project for `**/schemas/<databaseName>/<n>.json` and shows the highest version of each
+RoomEr scans the project for `**/schemas/<databaseName>/<n>.json` (and `**/schemas/<variant>/<databaseName>/<n>.json`) and shows the highest version of each
 database. If your files live somewhere unusual, use **Choose schema folder…** in the tool window.
 
 ## Using the diagram
@@ -113,7 +121,8 @@ by a unique index, otherwise *many*.
 ## Compatibility
 
 - Android Studio: the latest two stable releases.
-- Room schema JSON `formatVersion` 1. Other versions are reported as unsupported instead of being guessed at.
+- Room 2.x and Room 3.x (`androidx.room` and `androidx.room3` annotations for go to source).
+- Room schema JSON `formatVersion` 1, which both Room 2 and Room 3 write. Other versions are reported as unsupported instead of being guessed at.
 
 ## Building
 

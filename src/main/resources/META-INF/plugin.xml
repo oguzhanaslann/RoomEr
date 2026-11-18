@@ -25,7 +25,8 @@
         <h3>Getting started</h3>
         <ol>
           <li>Turn on schema export: keep <code>exportSchema = true</code> on your <code>@Database</code> and set
-              <code>room { schemaDirectory("$projectDir/schemas") }</code> (Room Gradle plugin) or the
+              <code>room { schemaDirectory("$projectDir/schemas") }</code> (Room 2.x Gradle plugin),
+              <code>room3 { schemaDirectory("$projectDir/schemas") }</code> (Room 3.x) or the
               <code>room.schemaLocation</code> KSP/kapt argument.</li>
           <li>Build the project, so Room writes <code>schemas/&lt;DatabaseClass&gt;/&lt;version&gt;.json</code>.</li>
           <li>Open <b>View | Tool Windows | Room ER</b>.</li>

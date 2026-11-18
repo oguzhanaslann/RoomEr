@@ -7,6 +7,8 @@ data class SchemaFileMatch(
     val databaseName: String,
     val version: Int,
     val filePath: String,
+    /** Build variant for `schemas/<variant>/<databaseName>/<n>.json` (Room's per-variant schemaDirectory), else null. */
+    val variant: String? = null,
 )
 
 /** One database found on disk: a schema folder plus the version files inside it (spec FR-02). */
@@ -45,12 +47,23 @@ object SchemaPathMatcher {
         return stem.toIntOrNull()
     }
 
-    /** Matches `schemas/<databaseName>/<n>.json` at any depth. */
+    /**
+     * Matches `schemas/<databaseName>/<n>.json` at any depth, and the per-variant layout
+     * `schemas/<variant>/<databaseName>/<n>.json` written by `schemaDirectory("<variant>", …)` in the Room 2.6+
+     * and Room 3 Gradle plugins. The variant form needs a qualified database name (it contains a dot, as
+     * Room's `<package>.<DatabaseClass>` folders do) and a variant without one, so that an arbitrary
+     * nested folder under `schemas` is not mistaken for a database.
+     */
     fun match(path: String): SchemaFileMatch? {
         val segments = segments(path)
-        if (segments.size < 3) return null
-        if (segments[segments.size - 3] != SCHEMAS_DIR) return null
-        return matchDatabaseFile(path)
+        if (segments.size >= 3 && segments[segments.size - 3] == SCHEMAS_DIR) return matchDatabaseFile(path)
+        if (segments.size >= 4 && segments[segments.size - 4] == SCHEMAS_DIR) {
+            val variant = segments[segments.size - 3]
+            val databaseName = segments[segments.size - 2]
+            if ('.' in variant || '.' !in databaseName) return null
+            return matchDatabaseFile(path)?.copy(variant = variant)
+        }
+        return null
     }
 
     /**
@@ -87,10 +100,13 @@ object SchemaPathMatcher {
      * labels when several databases share a name.
      */
     fun group(matches: Collection<SchemaFileMatch>, basePath: String? = null): List<DiscoveredDatabase> {
-        data class Raw(val folder: String, val name: String, val files: List<SchemaFileMatch>)
+        data class Raw(val folder: String, val name: String, val variant: String?, val files: List<SchemaFileMatch>)
 
         val raw = matches.groupBy { it.folderPath }
-            .map { (folder, files) -> Raw(folder, files.first().databaseName, files.sortedBy { it.version }) }
+            .map { (folder, files) ->
+                val first = files.first()
+                Raw(folder, first.databaseName, first.variant, files.sortedBy { it.version })
+            }
         val bySimpleName = raw.groupBy { it.name.substringAfterLast('.') }
         val byName = raw.groupBy { it.name }
 
@@ -98,14 +114,19 @@ object SchemaPathMatcher {
         fun relative(path: String): String =
             if (base != null && path.startsWith("$base/")) path.substring(base.length + 1) else path
 
-        /** Where the database lives: the directory containing `schemas`, relative to the project. */
-        fun location(folder: String): String {
-            val owner = folder.substringBeforeLast('/', "").substringBeforeLast('/', "")
-            return when {
+        /**
+         * Where the database lives: the directory containing `schemas`, relative to the project, followed by
+         * the build variant for per-variant folders.
+         */
+        fun location(db: Raw): String {
+            var owner = db.folder.substringBeforeLast('/', "").substringBeforeLast('/', "")
+            if (db.variant != null) owner = owner.substringBeforeLast('/', "")
+            val module = when {
                 base != null && owner == base -> "."
                 owner.isEmpty() -> "/"
                 else -> relative(owner)
             }
+            return if (db.variant == null) module else if (module == ".") db.variant else "$module, ${db.variant}"
         }
 
         return raw.map { db ->
@@ -115,14 +136,14 @@ object SchemaPathMatcher {
             val label = when {
                 sameSimple.size == 1 -> simpleName
                 sameName.size == 1 -> db.name
-                sameName.map { location(it.folder) }.distinct().size == sameName.size ->
-                    "$simpleName (${location(db.folder)})"
+                sameName.map { location(it) }.distinct().size == sameName.size ->
+                    "$simpleName (${location(db)})"
                 else -> "$simpleName (${relative(db.folder)})"
             }
             val stateKey = when {
                 sameName.size == 1 -> db.name
-                sameName.map { location(it.folder) }.distinct().size == sameName.size ->
-                    "${db.name}@${location(db.folder)}"
+                sameName.map { location(it) }.distinct().size == sameName.size ->
+                    "${db.name}@${location(db)}"
                 else -> "${db.name}@${relative(db.folder)}"
             }
             val latest = db.files.last()
