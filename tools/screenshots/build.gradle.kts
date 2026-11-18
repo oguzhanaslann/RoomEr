@@ -55,3 +55,8 @@ tasks.withType<JavaCompile>().configureEach {
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
     compilerOptions.jvmTarget.set(JvmTarget.JVM_21)
 }
+
+// This plugin is a dev tool: never verify, sign or publish it (and keep it out of release runs of those tasks).
+listOf("verifyPlugin", "signPlugin", "publishPlugin", "verifyPluginSignature").forEach { name ->
+    tasks.named(name) { enabled = false }
+}

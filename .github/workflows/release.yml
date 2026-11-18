@@ -46,7 +46,7 @@ jobs:
         run: ./gradlew check buildPlugin
 
       - name: Plugin verifier
-        run: ./gradlew verifyPlugin
+        run: ./gradlew :verifyPlugin
 
       - name: Publish to JetBrains Marketplace
         env:
@@ -59,7 +59,7 @@ jobs:
             echo "::warning::PUBLISH_TOKEN is not set; skipping Marketplace publishing."
             exit 0
           fi
-          ./gradlew publishPlugin
+          ./gradlew :publishPlugin
 
       - name: Create GitHub release
         env:
