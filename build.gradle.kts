@@ -70,8 +70,58 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach 
     compilerOptions.jvmDefault.set(org.jetbrains.kotlin.gradle.dsl.JvmDefaultMode.NO_COMPATIBILITY)
 }
 
+/**
+ * Change notes for [version] as HTML, taken from its `## [version]` section in CHANGELOG.md
+ * (falling back to `## [Unreleased]`). Handles the subset the changelog uses: `###` headings, `- ` bullets
+ * with indented continuation lines, `**bold**` and `` `code` ``.
+ */
+fun changeNotesFor(version: String): String {
+    val lines = rootProject.file("CHANGELOG.md").readLines()
+    fun section(name: String): List<String>? {
+        val start = lines.indexOfFirst { it.startsWith("## [$name]") }
+        if (start < 0) return null
+        val end = (start + 1 until lines.size).firstOrNull { lines[it].startsWith("## ") } ?: lines.size
+        return lines.subList(start + 1, end)
+    }
+    val body = section(version) ?: section("Unreleased") ?: return ""
+    fun inline(text: String) = text
+        .replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        .replace(Regex("\\*\\*(.+?)\\*\\*"), "<b>$1</b>")
+        .replace(Regex("`(.+?)`"), "<code>$1</code>")
+
+    val html = StringBuilder()
+    val item = StringBuilder()
+    var inList = false
+    fun flushItem() {
+        if (item.isNotEmpty()) html.append("<li>").append(inline(item.toString())).append("</li>")
+        item.clear()
+    }
+    fun closeList() {
+        flushItem()
+        if (inList) html.append("</ul>")
+        inList = false
+    }
+    for (line in body) {
+        when {
+            line.startsWith("### ") -> { closeList(); html.append("<h3>").append(inline(line.removePrefix("### "))).append("</h3>") }
+            line.startsWith("- ") -> {
+                flushItem()
+                if (!inList) html.append("<ul>")
+                inList = true
+                item.append(line.removePrefix("- ").trim())
+            }
+            line.isNotBlank() && inList -> item.append(' ').append(line.trim())
+            line.isBlank() -> flushItem()
+        }
+    }
+    closeList()
+    return html.toString()
+}
+
 intellijPlatform {
     pluginConfiguration {
+        changeNotes = provider { changeNotesFor(project.version.toString()) }
+
         ideaVersion {
             sinceBuild = providers.gradleProperty("pluginSinceBuild")
             // AC-22.2: no fixed upper bound.
@@ -85,6 +135,24 @@ intellijPlatform {
             providers.gradleProperty("pluginVerifierIdes").get()
                 .split(',').map(String::trim).filter(String::isNotEmpty)
                 .forEach { create(IntelliJPlatformType.AndroidStudio, it) }
+        }
+    }
+
+    // Signing and publishing read their secrets from the environment only (GitHub Actions secrets in CI),
+    // so nothing sensitive lives in the repository. Without the signing variables, signPlugin is skipped and
+    // the unsigned zip is published.
+    signing {
+        certificateChain = providers.environmentVariable("CERTIFICATE_CHAIN")
+        privateKey = providers.environmentVariable("PRIVATE_KEY")
+        password = providers.environmentVariable("PRIVATE_KEY_PASSWORD")
+    }
+
+    publishing {
+        token = providers.environmentVariable("PUBLISH_TOKEN")
+        // Marketplace channel from the version's pre-release label: 0.1.0 -> default (everyone),
+        // 0.1.0-eap.1 -> "eap" (only users who added that channel's repository).
+        channels = providers.gradleProperty("version").map { version ->
+            listOf(version.substringAfter('-', "").substringBefore('.').ifEmpty { "default" })
         }
     }
 }

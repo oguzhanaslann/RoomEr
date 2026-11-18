@@ -2,11 +2,35 @@
     <id>com.oguzhanaslann.roomer</id>
     <name>RoomEr - Room ER Diagrams</name>
     <vendor>Oguzhan Aslan</vendor>
+    <!-- Marketplace listing text. Change notes are added at build time from CHANGELOG.md. -->
     <description><![CDATA[
-        Shows the schema files exported by Room (<code>exportSchema = true</code>) as an interactive
-        entity-relationship diagram in the <b>Room ER</b> tool window: tables, columns, keys, indices,
-        views and FTS tables with crow's-foot relationships, search, focus mode, go-to-source and
-        Mermaid export. Read-only and offline.
+        <p>See your Room database as an entity-relationship diagram, right inside Android Studio.</p>
+        <p>RoomEr reads the schema JSON that Room exports at build time and draws it in the <b>Room ER</b>
+        tool window: every table, column and key, with foreign keys drawn as crow's-foot relationships.</p>
+
+        <h3>Features</h3>
+        <ul>
+          <li>Tables, columns and types with primary key, foreign key, unique, index and not-null markers</li>
+          <li>Foreign keys in crow's-foot notation, with inferred one-to-one / one-to-many cardinality</li>
+          <li>Views and FTS3/FTS4/FTS5 tables in their own styles, with a legend</li>
+          <li>Automatic layout; drag tables around and the positions are remembered per database</li>
+          <li>Search tables and columns, focus mode (a table and its neighbours), collapsible column lists</li>
+          <li>Go to source: jump from a table to its <code>@Entity</code> class (Kotlin or Java)</li>
+          <li>Export the diagram as a Mermaid <code>erDiagram</code> (copy, or save as <code>.mmd</code>)</li>
+          <li>Several databases per project; reloads automatically after a rebuild</li>
+          <li>Follows the IDE theme: light, dark and high contrast</li>
+          <li>Read-only and offline: no network access, no telemetry</li>
+        </ul>
+
+        <h3>Getting started</h3>
+        <ol>
+          <li>Turn on schema export: keep <code>exportSchema = true</code> on your <code>@Database</code> and set
+              <code>room { schemaDirectory("$projectDir/schemas") }</code> (Room Gradle plugin) or the
+              <code>room.schemaLocation</code> KSP/kapt argument.</li>
+          <li>Build the project, so Room writes <code>schemas/&lt;DatabaseClass&gt;/&lt;version&gt;.json</code>.</li>
+          <li>Open <b>View | Tool Windows | Room ER</b>.</li>
+        </ol>
+        <p>Schema files in another place? Use <b>Choose schema folder…</b> in the tool window.</p>
     ]]></description>
 
     <depends>com.intellij.modules.platform</depends>

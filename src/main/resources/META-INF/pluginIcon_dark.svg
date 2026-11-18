@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40">
+  <!-- Two Room tables joined by a one-to-many (crow's-foot) relationship. -->
+  <g stroke-width="1.5" stroke-linejoin="round">
+    <rect x="2.75" y="3.75" width="19.5" height="15.5" rx="2" fill="#2B2D30" stroke="#548AF7"/>
+    <path d="M2.75 9.5V5.75a2 2 0 0 1 2-2h15.5a2 2 0 0 1 2 2V9.5z" fill="#548AF7" stroke="#548AF7"/>
+    <path d="M6 13h12.5M6 16h9" stroke="#868A91" stroke-linecap="round"/>
+    <rect x="17.75" y="20.75" width="19.5" height="15.5" rx="2" fill="#2B2D30" stroke="#57965C"/>
+    <path d="M17.75 26.5V22.75a2 2 0 0 1 2-2h15.5a2 2 0 0 1 2 2V26.5z" fill="#57965C" stroke="#57965C"/>
+    <path d="M21 30h12.5M21 33h9" stroke="#868A91" stroke-linecap="round"/>
+  </g>
+  <g fill="none" stroke="#CED0D6" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M9 19.25V31.5h8.75"/>
+    <path d="M6.5 22h5"/>
+    <path d="M13.5 31.5l4.25-3.25M13.5 31.5l4.25 3.25"/>
+  </g>
+</svg>

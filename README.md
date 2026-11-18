@@ -110,6 +110,18 @@ platformLocalPath=/Applications/Android Studio.app
 Only the root project depends on the IntelliJ Platform. The logic modules are plain Kotlin/JVM modules, so
 they cannot reference Swing-in-IDE or platform UI classes.
 
+## Releasing
+
+1. Set `version` in `gradle.properties` and move the `[Unreleased]` notes in `CHANGELOG.md` under a
+   `## [x.y.z] - date` heading. That section becomes the change notes shown in Android Studio and on the Marketplace.
+2. Commit, then tag and push: `git tag vx.y.z && git push origin main vx.y.z`.
+3. The `Release` workflow (`.github/workflows/release.yml`) tests and verifies the plugin, publishes it to
+   JetBrains Marketplace (when the `PUBLISH_TOKEN` secret is set) and attaches the zip to a GitHub release.
+   A version like `0.1.0-eap.1` goes to the Marketplace `eap` channel.
+
+Signing is optional: set the `CERTIFICATE_CHAIN`, `PRIVATE_KEY` and `PRIVATE_KEY_PASSWORD` secrets to sign the
+published zip. The very first Marketplace upload has to be done by hand on plugins.jetbrains.com.
+
 ## Project documentation
 
 | File | Contents |

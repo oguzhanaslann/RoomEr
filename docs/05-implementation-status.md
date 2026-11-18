@@ -13,7 +13,7 @@ Updated: 2026-11-17 (real-schema check) · Status: **feature-complete, all autom
 | `:render` (Swing canvas) | finished; demo images inspected in light, dark and high-contrast | 60 pass | `notes/render.md` |
 | root plugin (discovery, state, tool window, navigation) | finished; panel exercised in platform tests | 71 pass | `notes/plugin.md` |
 
-- `./gradlew check buildPlugin` passes from scratch (`--rerun-tasks`). Plugin zip: `build/distributions/RoomEr-0.0.1.zip`, 8.6 MB.
+- `./gradlew check buildPlugin` passes from scratch (`--rerun-tasks`). Plugin zip: `build/distributions/RoomEr-0.0.2.zip`, 8.6 MB.
 - `./gradlew verifyPlugin`: **Compatible** with Android Studio 2026.1.4 (Quail, AI-261.26222.65) and 2026.2.2 (Rabbit, AI-262.10968.63),
   with no deprecated, experimental or internal API usages.
 - End-to-end load (parse + measure + ELK layout), 100 tables / 1000 columns: 406 ms first run, 17–30 ms warm (budget 2000 ms, AC-21.1).
@@ -23,7 +23,7 @@ Updated: 2026-11-17 (real-schema check) · Status: **feature-complete, all autom
   went through parse → Mermaid → layout → render → discovery path matching with no errors (≈245 ms cold). Three UX rough
   edges found, listed in §4 item 2.
 - **Nothing has been run in a live IDE window.**
-- Git: `main` on GitHub (private): https://github.com/oguzhanaslann/RoomEr. First release: `v0.0.1` (pre-release, plugin zip attached).
+- Git: `main` on GitHub (private): https://github.com/oguzhanaslann/RoomEr. Releases: `v0.0.1` (pre-release), `v0.0.2` (icon and Marketplace listing; built by the `Release` workflow).
 - Lessons learned while building this: `docs/06-learnings.md`.
 
 ## 2. Toolchain (this machine)
@@ -70,7 +70,7 @@ Updated: 2026-11-17 (real-schema check) · Status: **feature-complete, all autom
 3. Manual rendering checklist and on-screen 60 fps measurement at 100 tables (AC-13.1, AC-21.2). Record results in the release checklist.
 4. Optional canvas improvements (see `notes/render.md`): cache the edge layer as an image (full-quality frames ~11 ms → lower),
    obstacle-avoiding edge routing, draw FTS5 `contentRowId` links (not in the model yet).
-5. Release items: Marketplace name availability (R4), licence headers in source files, sign-off of the EPL/Apache bundling check
+5. Release items (icon, listing text, change notes from `CHANGELOG.md` and the tag-triggered `Release` workflow are done; first Marketplace upload is manual): Marketplace name availability (R4), licence headers in source files, sign-off of the EPL/Apache bundling check
    (R2, `NOTICE` lists everything bundled), git remote + CI run, Marketplace description/screenshots.
 
 ## 5. How to resume with agents
